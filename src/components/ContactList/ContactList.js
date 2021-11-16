@@ -1,40 +1,35 @@
 import propTypes from "prop-types";
 import { connect } from "react-redux";
+import Loader from "react-loader-spinner";
+import { useGetContactsQuery } from "../../redux/contactsSlice";
 import actions from "../../redux/actions";
+import ContactListItem from "./ContactListItem";
 
-function ContactList({ contacts, filter, deleteContact }) {
+function ContactList({ filter }) {
+  const { data, isLoading: contactsIsLoading } = useGetContactsQuery();
   return (
     <div>
-      {contacts
-        .filter((obj) => obj.name.toLowerCase().includes(filter.toLowerCase()))
-        .map((e) => (
-          <p key={e.id}>
-            {e.name}: {e.number}
-            <button
-              type="button"
-              data-id={e.id}
-              onClick={() => {
-                deleteContact(e.id);
-              }}
-            >
-              Delete
-            </button>
-          </p>
-        ))}
+      {contactsIsLoading && (
+        <Loader type="TailSpin" color="#00BFFF" height={100} width={100} />
+      )}
+      {data &&
+        data
+          .filter((obj) =>
+            obj.name.toLowerCase().includes(filter.toLowerCase())
+          )
+          .map((el) => <ContactListItem key={el.id} el={el} />)}
     </div>
   );
 }
 
 const mapStateToProps = (state) => {
   return {
-    contacts: state.contacts.items,
-    filter: state.contacts.filter,
+    filter: state.filter,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    deleteContact: (contactId) => dispatch(actions.deleteContact(contactId)),
     setFilter: (filter) => dispatch(actions.setFilter(filter)),
   };
 };
@@ -42,7 +37,5 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(ContactList);
 
 ContactList.propTypes = {
-  contacts: propTypes.array.isRequired,
   filter: propTypes.string.isRequired,
-  deleteContact: propTypes.func.isRequired,
 };

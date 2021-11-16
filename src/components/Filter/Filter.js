@@ -5,7 +5,6 @@ import actions from "../../redux/actions";
 
 function Filter({ filter, setFilter }) {
   const filterInputId = shortid.generate();
-
   return (
     <div>
       <label htmlFor={filterInputId}>Find contacts by name</label>
@@ -24,7 +23,7 @@ function Filter({ filter, setFilter }) {
 
 const mapStateToProps = (state) => {
   return {
-    filter: state.contacts.filter,
+    filter: state.filter,
   };
 };
 

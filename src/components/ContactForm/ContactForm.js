@@ -1,18 +1,18 @@
 import { useState, useRef } from "react";
 import shortid from "shortid";
-import propTypes from "prop-types";
-import actions from "../../redux/actions";
-import { connect } from "react-redux";
+import Loader from "react-loader-spinner";
+import { useAddContactMutation } from "../../redux/contactsSlice";
 
-function ContactForm({ addContact }) {
+function ContactForm() {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const nameInputId = useRef(shortid.generate());
   const numberInputId = useRef(shortid.generate());
+  const [addContact, { isLoading }] = useAddContactMutation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addContact(name, number);
+    addContact({ name, phone: number });
     setName("");
     setNumber("");
   };
@@ -50,19 +50,15 @@ function ContactForm({ addContact }) {
           }}
         />
       </div>
-      <button type="submit">Add contact</button>
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? (
+          <Loader type="TailSpin" color="#00BFFF" height={20} width={85} />
+        ) : (
+          "Add contact"
+        )}
+      </button>
     </form>
   );
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    addContact: (name, number) => dispatch(actions.addContact(name, number)),
-  };
-};
-
-export default connect(() => ({}), mapDispatchToProps)(ContactForm);
-
-ContactForm.propTypes = {
-  addContact: propTypes.func.isRequired,
-};
+export default ContactForm;
